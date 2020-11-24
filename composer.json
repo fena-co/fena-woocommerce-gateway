@@ -1,0 +1,20 @@
+{
+  "name": "fena/fena-payment-gateway",
+  "description": "Fena Payment Gateway",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Fena",
+      "email": "support@fena.co"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "fena/php-payment-sdk": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "FenaCommerceGateway\\": "src"
+    }
+  }
+}
