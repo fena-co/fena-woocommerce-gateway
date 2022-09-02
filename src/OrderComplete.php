@@ -19,7 +19,7 @@ class OrderComplete
         }
 
         $paymentMethod = $order->get_payment_method();
-        if ($paymentMethod != 'faizpay_payment') {
+        if ($paymentMethod != 'fena_payment') {
             return $old;
         }
 
