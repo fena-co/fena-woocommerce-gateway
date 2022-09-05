@@ -13,6 +13,8 @@ class PaymentNotification
 
     public static function process($terminal_id, $terminal_secret)
     {
+        global $woocommerce;
+
         $data = json_decode(file_get_contents('php://input'), true);
 
         if (!isset($data['status'])) {
@@ -65,6 +67,7 @@ class PaymentNotification
             $order->add_order_note("Fena Order ID {$orderId}", 0);
             $order->add_order_note("Fena Net Amount £{$amount}", 0);
             $order->payment_complete();
+            $woocommerce->cart->empty_cart();
         }
         if ($status == 'rejected') {
             error_log( "Should reject" );

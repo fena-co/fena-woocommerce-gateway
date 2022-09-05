@@ -11,6 +11,7 @@ class OrderComplete
         global $woocommerce;
 
         $orderID = self::getOrderId();
+        $status = self::getOrderStatus();
 
         $order = wc_get_order($orderID);
 
@@ -24,27 +25,11 @@ class OrderComplete
             return $old;
         }
 
-        $internalStatus = $order->get_status();
-
-        if ($internalStatus == 'cancelled') {
-            return "Your payment has been rejected";
+        if ($status == 'rejected') {
+            return "Your payment has been cancelled";
         }
 
-        // if mark as accepted
-        if (!$order->needs_payment()) {
-            // Remove cart items
-            $woocommerce->cart->empty_cart();
-            return $old;
-        } else {
-            if ($order->needs_payment()) {
-                $url = $order->get_cancel_order_url_raw();
-                error_log('cancel url' . $url);
-                if (wp_redirect($url)) {
-                    exit;
-                }
-            }
-        }
-        return "Payment Rejected";
+        return $old;
     }
 
     public
@@ -57,13 +42,9 @@ class OrderComplete
     }
 
     private
-    static function checkOrderStatus()
+    static function getOrderStatus()
     {
-        $status = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : "rejected";
-        if ($status == 'executed') {
-            return true;
-        }
-        return false;
+        return isset($_GET['status']) ? sanitize_text_field($_GET['status']) : "rejected";
     }
 
     private
