@@ -44,13 +44,15 @@ final class FenaPaymentGateway extends WC_Payment_Gateway
         // https://rudrastyh.com/woocommerce/thank-you-page.html
 
         // add_filter('woocommerce_endpoint_order-received_title', [$this, 'redirect_end_point_title']);
-        add_filter('woocommerce_thankyou_order_received_text', [$this, 'order_received_text'], 10, 2);
+        add_filter('woocommerce_thankyou_order_received_text', [$this, 'order_received_text'], 10, 3);
     }
 
 
-    public function order_received_text($text)
+    public function order_received_text($text, $order)
     {
-        return OrderComplete::title($text, $this);
+        error_log( $text );
+        error_log( print_r($order, true));
+        return OrderComplete::title($text, $order);
     }
 
     public function init_form_fields()

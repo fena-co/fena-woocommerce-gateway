@@ -6,6 +6,7 @@ namespace FenaCommerceGateway;
 
 use Fena\PaymentSDK\Connection;
 use Fena\PaymentSDK\Error;
+use Fena\PaymentSDK\Payment;
 
 class PaymentNotification
 {
@@ -25,10 +26,38 @@ class PaymentNotification
         $status = $data['status'];
         $amount = $data['amount'];
 
-        $order = new \WC_Order($orderId);
+        $order = wc_get_order($orderId);
+
+        $hashedId = $order->get_meta('_fena_payment_hashed_id');
+
+        $connection = Connection::createConnection(
+            $terminal_id,
+            $terminal_secret
+        );
+
+        if ($connection instanceof Error) {
+            return array(
+                'result' => 'failure',
+                'messages' => 'Something went wrong. Please contact support.'
+            );
+        }
+
+        $payment = Payment::createPayment(
+            $connection,
+            $order->get_total(),
+            $orderId
+        );
 
         if ($order->get_id() == '') {
             die();
+        }
+
+        $serverData = $payment->checkStatusByHashedId($hashedId);
+
+        error_log( print_r($serverData, TRUE) );
+
+        if ($serverData['data']['status'] != $status) {
+            $status = $serverData['data']['status'];
         }
 
         if ($status == 'paid') {
@@ -38,6 +67,7 @@ class PaymentNotification
             $order->payment_complete();
         }
         if ($status == 'rejected') {
+            error_log( "Should reject" );
             $order->add_order_note("The payment for id {$orderId} has been cancelled by the customer", 0);
             $order->cancel_order();
         }

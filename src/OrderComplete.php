@@ -6,7 +6,7 @@ namespace FenaCommerceGateway;
 
 class OrderComplete
 {
-    public static function title($old, FenaPaymentGateway $faizPayPaymentGateway)
+    public static function title($old)
     {
         global $woocommerce;
 
@@ -15,6 +15,7 @@ class OrderComplete
         $order = wc_get_order($orderID);
 
         if ($order === false) {
+            error_log( 'No order found!' );
             return $old;
         }
 
@@ -23,32 +24,21 @@ class OrderComplete
             return $old;
         }
 
+        $internalStatus = $order->get_status();
+
+        if ($internalStatus == 'cancelled') {
+            return "Your payment has been rejected";
+        }
+
         // if mark as accepted
-        if (self::checkOrderStatus()) {
-            // if doesn't need payment
-            if (!$order->needs_payment()) {
-                // Remove cart items
-                $woocommerce->cart->empty_cart();
-                // only show the final link if order completed in last half an hour
-                $datePaid = $order->get_date_paid();
-                if ($datePaid instanceof \DateTime) {
-                    $now = new \DateTime();
-                    $diff = $now->diff($datePaid);
-                    $minutes =
-                        ($diff->format('%a') * 1440) + // total days converted to minutes
-                        ($diff->format('%h') * 60) +   // hours converted to minutes
-                        $diff->format('%i');          // minutes
-                    if ($minutes <= 30) { // if order with in half an hour
-                        $url = $faizPayPaymentGateway->get_return_url($order);
-                        if (wp_redirect($url)) {
-                            exit;
-                        }
-                    }
-                }
-            }
+        if (!$order->needs_payment()) {
+            // Remove cart items
+            $woocommerce->cart->empty_cart();
+            return $old;
         } else {
             if ($order->needs_payment()) {
                 $url = $order->get_cancel_order_url_raw();
+                error_log('cancel url' . $url);
                 if (wp_redirect($url)) {
                     exit;
                 }
@@ -79,6 +69,6 @@ class OrderComplete
     private
     static function getOrderId()
     {
-        return isset($_GET['order']) ? sanitize_text_field($_GET['order']) : "0";
+        return isset($_GET['order_id']) ? sanitize_text_field($_GET['order_id']) : "0";
     }
 }

@@ -125,11 +125,15 @@ class PaymentProcess
         if ($deliveryAddress instanceof DeliveryAddress) {
             $payment->setDeliveryAddress($deliveryAddress);
         }
-        error_log( print_r($payment, true) );
 
         $url = $payment->process();
 
         $order->update_status('awaiting_payment', 'Awaiting payment');
+
+        $hashed = $payment->getHashedId();
+
+        $order->add_meta_data( '_fena_payment_hashed_id', $hashed );
+        $order->save_meta_data();
 
         return array(
             'result' => 'success',
