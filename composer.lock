@@ -1,0 +1,66 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "23ada006aedd58b0702f0ec0615f4964",
+    "packages": [
+        {
+            "name": "fena/php-payment-sdk",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fena-co/fena-php-sdk.git",
+                "reference": "a73fa593076d7893e502de235ce57fb117d87080"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fena-co/fena-php-sdk/zipball/a73fa593076d7893e502de235ce57fb117d87080",
+                "reference": "a73fa593076d7893e502de235ce57fb117d87080",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fena\\PaymentSDK\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fena",
+                    "email": "support@fena.co"
+                }
+            ],
+            "description": "SDK for working with Fena payment APIs.",
+            "support": {
+                "issues": "https://github.com/fena-co/fena-php-sdk/issues",
+                "source": "https://github.com/fena-co/fena-php-sdk/tree/master"
+            },
+            "time": "2022-09-05T13:43:20+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "fena/php-payment-sdk": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}
