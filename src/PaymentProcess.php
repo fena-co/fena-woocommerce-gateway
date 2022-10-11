@@ -23,6 +23,7 @@ class PaymentProcess
 //        error_reporting(E_ALL);
 
         $order = new \WC_Order($order_id);
+        $order_number = $order->get_order_number(); // To be used with the Custom Order Numbers For Woocommerce Plugin
         $connection = Connection::createConnection(
             $terminal_id,
             $terminal_secret
@@ -45,7 +46,7 @@ class PaymentProcess
         $payment = Payment::createPayment(
             $connection,
             $order->get_total(),
-            $order_id
+            $order_number
         );
 
         if ($payment instanceof Error) {
