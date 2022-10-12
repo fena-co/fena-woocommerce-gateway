@@ -107,14 +107,14 @@ class PaymentNotification
 
         if ($status == 'paid') {
             error_log( "Should succeed" );
-            $order->add_order_note("Fena Order ID {$orderId}", 0);
+            $order->add_order_note("WooCommerce Default Order ID {$orderId}", 0);
             $order->add_order_note("Fena Net Amount £{$amount}", 0);
             $order->payment_complete();
             $woocommerce->cart->empty_cart();
         }
         if ($status == 'rejected') {
             error_log( "Should reject" );
-            $order->add_order_note("The payment for id {$orderId} has been cancelled by the customer", 0);
+            $order->add_order_note("The payment for id {$order_number} has been cancelled by the customer", 0);
             $order->cancel_order();
         }
         exit();
