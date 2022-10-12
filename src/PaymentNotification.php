@@ -24,9 +24,46 @@ class PaymentNotification
             die();
         }
 
-        $orderId = $data['reference'];
+        $order_number = $data['reference'];
         $status = $data['status'];
         $amount = $data['amount'];
+
+        $args    = array(
+            'post_type'      => 'shop_order',
+            'post_status'    => 'any',
+            'meta_query'     => array(
+                array(
+                    'key'        => '_alg_wc_full_custom_order_number',
+                    'value'      => $order_number,  //here you pass the Order Number
+                    'compare'    => '=',
+                )
+            )
+        );
+        $query   = new \WP_Query( $args );
+        if ( !empty( $query->posts ) ) {
+            $orderId = $query->posts[ 0 ]->ID;
+        } else {
+            $args    = array(
+                'post_type'      => 'shop_order',
+                'post_status'    => 'any',
+                'meta_query'     => array(
+                    array(
+                        'key'        => '_order_number',
+                        'value'      => $order_number,  //here you pass the Order Number
+                        'compare'    => '=',
+                    )
+                )
+            );
+            $query   = new \WP_Query( $args );
+            if ( !empty( $query->posts ) ) {
+                $orderId = $query->posts[ 0 ]->ID;
+            }
+        }
+
+        if (!isset($orderId)) {
+            error_log( "Order ID not found" );
+            die();
+        }
 
         $order = wc_get_order($orderId);
 
@@ -60,6 +97,12 @@ class PaymentNotification
 
         if ($serverData['data']['status'] != $status) {
             $status = $serverData['data']['status'];
+        }
+
+        if ($serverData['data']['transaction']) {
+            $transaction_id = $serverData['data']['transaction'];
+            $order->set_transaction_id($transaction_id);
+            $order->add_order_note("Fena Transaction ID {$transaction_id}", 0);
         }
 
         if ($status == 'paid') {
