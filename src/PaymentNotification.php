@@ -93,7 +93,6 @@ class PaymentNotification
 
         $serverData = $payment->checkStatusByHashedId($hashedId);
 
-        error_log( print_r($serverData, TRUE) );
 
         if ($serverData['data']['status'] != $status) {
             $status = $serverData['data']['status'];
@@ -102,19 +101,18 @@ class PaymentNotification
         if ($serverData['data']['transaction']) {
             $transaction_id = $serverData['data']['transaction'];
             $order->set_transaction_id($transaction_id);
+            $order->add_order_note("WooCommerce Default Order ID {$orderId}", 0);
             $order->add_order_note("Fena Transaction ID {$transaction_id}", 0);
+            $order->add_order_note("WooCommerce Order Number {$order_number}", 0);
         }
 
         if ($status == 'paid') {
-            error_log( "Should succeed" );
-            $order->add_order_note("WooCommerce Default Order ID {$orderId}", 0);
             $order->add_order_note("Fena Net Amount £{$amount}", 0);
             $order->payment_complete();
             $woocommerce->cart->empty_cart();
         }
         if ($status == 'rejected') {
-            error_log( "Should reject" );
-            $order->add_order_note("The payment for id {$order_number} has been cancelled by the customer", 0);
+            $order->add_order_note("The payment has been cancelled by the customer", 0);
             $order->cancel_order();
         }
         exit();
