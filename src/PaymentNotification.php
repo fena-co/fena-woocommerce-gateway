@@ -18,9 +18,11 @@ class PaymentNotification
         $data = json_decode(file_get_contents('php://input'), true);
 
         if (!isset($data['status'])) {
+            error_log("Status not in data");
             die();
         }
         if (!isset($data['reference'])) {
+            error_log("Reference not in data");
             die();
         }
 
@@ -98,23 +100,29 @@ class PaymentNotification
             $status = $serverData['data']['status'];
         }
 
-        if ($serverData['data']['transaction']) {
-            $transaction_id = $serverData['data']['transaction'];
-            $order->set_transaction_id($transaction_id);
-            $order->add_order_note("Fena Transaction ID {$transaction_id}", 0);
-        }
-
         if ($status == 'paid') {
             $order->add_order_note("WooCommerce Default Order ID {$orderId}", 0);
             $order->add_order_note("WooCommerce Order Number (Fena Reference): {$order_number}", 0);
             $order->add_order_note("Fena Net Amount £{$amount}", 0);
-            $order->payment_complete();
             $woocommerce->cart->empty_cart();
+
+            if ($serverData['data']['transaction']) {
+                $transaction_id = $serverData['data']['transaction'];
+                $order->payment_complete( $transaction_id );
+                $order->add_order_note("Fena Transaction ID {$transaction_id}", 0);
+            }
         }
         if ($status == 'rejected') {
             $order->add_order_note("WooCommerce Default Order ID {$orderId}", 0);
             $order->add_order_note("WooCommerce Order Number (Fena Reference): {$order_number}", 0);
             $order->add_order_note("The payment has been cancelled by the customer", 0);
+
+            if ($serverData['data']['transaction']) {
+                $transaction_id = $serverData['data']['transaction'];
+                $order->set_transaction_id($transaction_id);
+                $order->add_order_note("Fena Transaction ID {$transaction_id}", 0);
+            }
+
             $order->cancel_order();
         }
         exit();

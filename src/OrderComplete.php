@@ -10,10 +10,47 @@ class OrderComplete
     {
         global $woocommerce;
 
-        $orderID = self::getOrderId();
+        $order_number = self::getOrderNumber();
         $status = self::getOrderStatus();
 
-        $order = wc_get_order($orderID);
+        $args    = array(
+            'post_type'      => 'shop_order',
+            'post_status'    => 'any',
+            'meta_query'     => array(
+                array(
+                    'key'        => '_alg_wc_full_custom_order_number',
+                    'value'      => $order_number,  //here you pass the Order Number
+                    'compare'    => '=',
+                )
+            )
+        );
+        $query   = new \WP_Query( $args );
+        if ( !empty( $query->posts ) ) {
+            $orderId = $query->posts[ 0 ]->ID;
+        } else {
+            $args    = array(
+                'post_type'      => 'shop_order',
+                'post_status'    => 'any',
+                'meta_query'     => array(
+                    array(
+                        'key'        => '_order_number',
+                        'value'      => $order_number,  //here you pass the Order Number
+                        'compare'    => '=',
+                    )
+                )
+            );
+            $query   = new \WP_Query( $args );
+            if ( !empty( $query->posts ) ) {
+                $orderId = $query->posts[ 0 ]->ID;
+            }
+        }
+
+        if (!isset($orderId)) {
+            error_log( "Order ID not found" );
+            die();
+        }
+
+        $order = wc_get_order($orderId);
 
         if ($order === false) {
             error_log( 'No order found!' );
@@ -48,7 +85,7 @@ class OrderComplete
     }
 
     private
-    static function getOrderId()
+    static function getOrderNumber()
     {
         return isset($_GET['order_id']) ? sanitize_text_field($_GET['order_id']) : "0";
     }
