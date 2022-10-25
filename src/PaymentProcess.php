@@ -23,6 +23,16 @@ class PaymentProcess
 //        error_reporting(E_ALL);
 
         $order = new \WC_Order($order_id);
+
+        $previousUrl = $order->get_meta('_fena_payment_url');
+
+        if (isset($previousUrl)) {
+            return array(
+                'result' => 'success',
+                'redirect' => $previousUrl
+            );
+        }
+
         $order_number = $order->get_order_number(); // To be used with the Custom Order Numbers For Woocommerce Plugin
         $connection = Connection::createConnection(
             $terminal_id,
@@ -134,6 +144,7 @@ class PaymentProcess
         $hashed = $payment->getHashedId();
 
         $order->add_meta_data( '_fena_payment_hashed_id', $hashed );
+        $order->add_meta_data( '_fena_payment_url', $url );
         $order->save_meta_data();
 
         return array(
