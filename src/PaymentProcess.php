@@ -24,9 +24,11 @@ class PaymentProcess
 
         $order = new \WC_Order($order_id);
 
+
         $previousUrl = $order->get_meta('_fena_payment_url');
 
-        if (isset($previousUrl)) {
+        if (!empty($previousUrl)) {
+            $order->add_order_note("Url is{$previousUrl}, I assume it exists", 0);
             return array(
                 'result' => 'success',
                 'redirect' => $previousUrl
