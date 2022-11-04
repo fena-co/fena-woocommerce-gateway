@@ -18,7 +18,7 @@ class AdminPortalUI
         <pre><?php echo home_url('/wc-api/fena', 'https'); ?></pre>
 
         <h4>Redirect URL</h4>
-        <pre><?php echo home_url('/checkout/order-received/', 'https'); ?></pre>
+        <pre><?php echo wc_get_endpoint_url( 'order-received', '', wc_get_checkout_url() ); ?></pre>
         <?php
     }
 }

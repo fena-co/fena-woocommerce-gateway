@@ -40,19 +40,7 @@ final class FenaPaymentGateway extends WC_Payment_Gateway
 
         add_action('woocommerce_api_fena', array($this, 'webhook'));
 
-        // https://rudrastyh.com/woocommerce/payment-gateway-plugin.html#gateway_options
-        // https://rudrastyh.com/woocommerce/thank-you-page.html
-
-        // add_filter('woocommerce_endpoint_order-received_title', [$this, 'redirect_end_point_title']);
-        add_filter('woocommerce_thankyou_order_received_text', [$this, 'order_received_text'], 10, 3);
-    }
-
-
-    public function order_received_text($text, $order)
-    {
-        error_log( $text );
-        error_log( print_r($order, true));
-        return OrderComplete::title($text, $order);
+        add_action('template_redirect', 'order_received_custom_payment_redirect');
     }
 
     public function init_form_fields()
@@ -84,5 +72,82 @@ final class FenaPaymentGateway extends WC_Payment_Gateway
     public function webhook()
     {
         PaymentNotification::process($this->terminal_id, $this->terminal_secret);
+    }
+
+    public function order_received_custom_payment_redirect()
+    {
+
+        // do nothing if we are not on the order received page and not coming from Fena payment flow
+        if (!is_wc_endpoint_url('order-received') || empty($_GET['order_id'])) {
+            return;
+        }
+
+        // error_log('Order received endpoint');
+
+        $order_number = self::getOrderNumber();
+        $status = self::getOrderStatus();
+
+        $args = array(
+            'post_type' => 'shop_order',
+            'post_status' => 'any',
+            'meta_query' => array(
+                array(
+                    'key' => '_alg_wc_full_custom_order_number',
+                    'value' => $order_number,  //here you pass the Order Number
+                    'compare' => '=',
+                )
+            )
+        );
+        $query = new \WP_Query($args);
+        if (!empty($query->posts)) {
+            $orderId = $query->posts[0]->ID;
+        } else {
+            $args = array(
+                'post_type' => 'shop_order',
+                'post_status' => 'any',
+                'meta_query' => array(
+                    array(
+                        'key' => '_order_number',
+                        'value' => $order_number,  //here you pass the Order Number
+                        'compare' => '=',
+                    )
+                )
+            );
+            $query = new \WP_Query($args);
+            if (!empty($query->posts)) {
+                $orderId = $query->posts[0]->ID;
+            }
+        }
+
+        if (!isset($orderId)) {
+            error_log("Order ID not found");
+            die();
+        }
+
+        $order = wc_get_order($orderId);
+
+        if ($order === false) {
+            error_log('No order found!');
+            return;
+        }
+
+        $paymentMethod = $order->get_payment_method();
+        if ($paymentMethod === 'fena_payment') {
+            // if cash of delivery, redirecto to a custom thank you page
+            wp_safe_redirect($order->get_checkout_order_received_url());
+            exit; // always exit
+        }
+    }
+
+    private
+    static function getOrderStatus()
+    {
+        return isset($_GET['status']) ? sanitize_text_field($_GET['status']) : "rejected";
+    }
+
+    private
+    static function getOrderNumber()
+    {
+        return isset($_GET['order_id']) ? sanitize_text_field($_GET['order_id']) : "0";
     }
 }
