@@ -15,6 +15,8 @@ class PaymentNotification
     {
         global $woocommerce;
 
+        error_log("Fena webhook processing started");
+
         $data = json_decode(file_get_contents('php://input'), true);
 
         if (!isset($data['status'])) {
@@ -75,6 +77,8 @@ class PaymentNotification
             error_log( "Order not found" );
             die();
         }
+
+        $order->add_order_note("FENA: Order found, processing the webhook", 0);
 
         $hashedId = $order->get_meta('_fena_payment_hashed_id');
 
