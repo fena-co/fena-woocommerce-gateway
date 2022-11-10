@@ -78,7 +78,7 @@ class PaymentNotification
             die();
         }
 
-        $order->add_order_note("FENA: Order found, processing the webhook", 0);
+        $order->add_order_note("FENA: Order found, processing the webhook with status " . $status, 0);
 
         $hashedId = $order->get_meta('_fena_payment_hashed_id');
 
