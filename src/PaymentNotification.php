@@ -59,6 +59,8 @@ class PaymentNotification
             $query   = new \WP_Query( $args );
             if ( !empty( $query->posts ) ) {
                 $orderId = $query->posts[ 0 ]->ID;
+            } else {
+                $orderId = $order_number;
             }
         }
 
@@ -68,6 +70,11 @@ class PaymentNotification
         }
 
         $order = wc_get_order($orderId);
+
+        if (!isset($order)) {
+            error_log( "Order not found" );
+            die();
+        }
 
         $hashedId = $order->get_meta('_fena_payment_hashed_id');
 
@@ -95,9 +102,18 @@ class PaymentNotification
 
         $serverData = $payment->checkStatusByHashedId($hashedId);
 
+        $serverStatus = $serverData['data']['status'];
 
-        if ($serverData['data']['status'] != $status) {
-            $status = $serverData['data']['status'];
+        error_log("Server status is " . $serverStatus);
+
+        if ($serverStatus != $status) {
+            error_log("Server status different from the webhook, the server one is " . $serverStatus . ", the webhook one is " . $status);
+            $status = $serverStatus;
+        }
+
+        if ($status == 'sent') {
+            error_log("Status is still sent");
+            die();
         }
 
         if ($status == 'paid') {

@@ -55,10 +55,15 @@ class PaymentProcess
             );
         }
 
+        $checkoutUrl = $order->get_checkout_order_received_url();
+
+        error_log($checkoutUrl);
+
         $payment = Payment::createPayment(
             $connection,
             $order->get_total(),
-            $order_number
+            $order_number,
+            $checkoutUrl
         );
 
         if ($payment instanceof Error) {

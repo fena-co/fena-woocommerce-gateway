@@ -5,7 +5,7 @@ Tags: fena, faizpay, woo, woocommerce, ecommerce, commerce, bank, HSBC, Barclay,
 Requires at least: 5.0
 Requires PHP: 7.4
 Tested up to: 6.0
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 
 == Description ==
