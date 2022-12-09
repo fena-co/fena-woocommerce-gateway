@@ -62,7 +62,23 @@ class PaymentNotification
             if ( !empty( $query->posts ) ) {
                 $orderId = $query->posts[ 0 ]->ID;
             } else {
-                $orderId = $order_number;
+                $args    = array(
+                    'post_type'      => 'shop_order',
+                    'post_status'    => 'any',
+                    'meta_query'     => array(
+                        array(
+                            'key'        => '_wcj_order_number',
+                            'value'      => $order_number,  //here you pass the Order Number
+                            'compare'    => '=',
+                        )
+                    )
+                );
+                $query   = new \WP_Query( $args );
+                if ( !empty( $query->posts ) ) {
+                    $orderId = $query->posts[ 0 ]->ID;
+                } else {
+                    $orderId = $order_number;
+                }
             }
         }
 
