@@ -5,19 +5,19 @@ Tags: fena, faizpay, woo, woocommerce, ecommerce, commerce, bank, HSBC, Barclay,
 Requires at least: 5.0
 Requires PHP: 7.4
 Tested up to: 6.0
-Stable tag: 1.1.3
+Stable tag: 1.1.6
 License: GPLv2 or later
 
 == Description ==
 
-**Payments made simple, with no monthly fees and only 0.3% fee per transaction**
+**Payments made simple**
 
 Securely accept account-to-account payments and allow customers to pay you directly from their bank account to yours. Plus, save money on payment processing fees.
 
 Once you’ve enabled fena powered Open Banking payments in your WooCommerce checkout, you can take advantage of the following features:
 
 * Instant settlement - receive funds from transactions deposited directly to your account
-* Low fees - only 0.3% on your UK domestic transactions
+* Save on fees – process up to £10,000 for only £24.99 per month
 * Bank-level security - all payments are processed via banks on the faster payments network
 
 **Manage transactions comfortably from the Fena Business Portal**
@@ -31,7 +31,7 @@ From our *Business Portal,* you can:
 
 **Pay as you go**
 
-Fena Payment Gateway is *free to install*, with *no setup costs or monthly fees.* Fees are set at 0.3% per transaction for UK clients. [Read more about transaction fees.](https://www.fena.co/pricing "Read more about transaction fees.")
+Fena Payment Gateway is *free to install*, with *no setup costs.* Process up to £2,000 for just £4.99 per month. [Read more about pricing.](https://www.fena.co/pricing "Read more about pricing.")
 
 **Supported by the Fena team**
 
