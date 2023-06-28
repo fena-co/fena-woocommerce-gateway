@@ -47,7 +47,7 @@ class PaymentProcess
             );
         }
 
-        if ($order->get_total() < 0.50) {
+        if ($order->get_total() < 0.01) {
             return array(
                 'result' => 'failure',
                 'messages' => 'Total amount should be greater than 0.50.'
