@@ -1,15 +1,13 @@
 <?php
 
-
 namespace FenaCommerceGateway;
-
 
 class AdminPortalOptions
 {
 
     public static function get()
     {
-        return array(
+        $fields = array(
             'enabled' => array(
                 'title' => 'Enable/Disable',
                 'type' => 'checkbox',
@@ -23,7 +21,6 @@ class AdminPortalOptions
                 'default' => '',
                 'desc_tip' => true,
             ),
-
             'terminal_secret' => array(
                 'title' => 'Integration Secret',
                 'type' => 'text',
@@ -45,7 +42,25 @@ class AdminPortalOptions
                 'description' => 'This controls the description which the user sees during checkout.',
                 'default' => 'Pay instantly via online bank transfer - Supports most of the U.K banks',
             ),
+ 
+
+
+            'dropdown' => array(
+                'title' => 'Select Banks',
+                'type' => 'select',
+                'options' => array(
+                    'option1' => 'Default',
+                    'option2' => 'Banks Will be loaded once you saved terminalId and Secret',
+                    
+                ),
+                'default' => 'option1',
+                'desc_tip' => true,
+                
+            ),
+            
         );
+
+        return $fields;
     }
 
     public static function validate($terminal_secret, $terminal_id)
@@ -55,11 +70,12 @@ class AdminPortalOptions
             return false;
         }
 
-
         if (!$terminal_id) {
             \WC_Admin_Settings::add_error('Invalid Terminal ID Given');
             return false;
         }
+
         return true;
     }
 }
+
